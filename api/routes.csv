@@ -1,4 +1,4 @@
-id,subsection_id,difficulty,difficulty_mod,setter1,setter2,description,sort
+id,subsection_id,difficulty,difficulty_mod,setter1_id,setter2_id,description,sort
 1,1,,0,1,,Youth Program,1
 2,1,-1,0,7,,,2
 3,1,1,0,7,,Sit Start,3

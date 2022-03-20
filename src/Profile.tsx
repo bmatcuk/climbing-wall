@@ -60,7 +60,9 @@ const Profile: FunctionComponent<Props> = ({ jwt, user }) => {
 
   return (
     <section>
-      <Link href="/">&laquo; Back</Link>
+      <p>
+        <Link href="/">&laquo; Back</Link>
+      </p>
       <form onSubmit={changePassword}>
         <fieldset>
           <legend>Change Password</legend>

@@ -82,15 +82,15 @@ const RouteItem: FunctionComponent<Props> = ({
         &nbsp;
         {route.description}
         &nbsp;
-        {route.setter2 ? (
+        {route.setter2_id ? (
           <small>
-            <SetterAbbr setter={setters.get(route.setter1)} />
+            <SetterAbbr setter={setters.get(route.setter1_id)} />
             +
-            <SetterAbbr setter={setters.get(route.setter2)} />
+            <SetterAbbr setter={setters.get(route.setter2_id)} />
           </small>
         ) : (
           <small>
-            <SetterAbbr setter={setters.get(route.setter1)} />
+            <SetterAbbr setter={setters.get(route.setter1_id)} />
           </small>
         )}
       </label>

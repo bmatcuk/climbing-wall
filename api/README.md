@@ -23,6 +23,13 @@ COPY climbingwall.TABLE FROM '/path/to/file' WITH (FORMAT csv, HEADER true);
 SELECT setval('climbingwall.TABLE_id_seq',max(id)) from climbingwall.TABLE;
 ```
 
+For the routes table, you must explicitly specify the columns:
+
+```sql
+COPY climbingwall.routes (id,subsection_id,difficulty,difficulty_mod,setter1_id,setter2_id,description,sort)
+FROM '/path/to/file' WITH (FORMAT csv, HEADER true);
+```
+
 [pgjwt]: https://github.com/michelp/pgjwt
 [postgresql]: https://www.postgresql.org/
 [postgrest]: https://postgrest.org/

@@ -31,8 +31,8 @@ export type Route = {
   color1: string | null
   color2: string | null
   symbol: string | null
-  setter1: number
-  setter2: number | null
+  setter1_id: number
+  setter2_id: number | null
   description: string | null
   active: boolean
   set_on: Date | null

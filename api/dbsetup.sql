@@ -3,9 +3,6 @@
 --
 -- Run this file on that database.
 --
--- You must set jwt secret using:
--- ALTER DATABASE climbingwall SET "app.jwt_secret" TO 'SECRET HERE';
---
 -- And, you'll want to update the password for the webauth role
 -- ALTER USER webauth WITH PASSWORD 'whatever';
 
@@ -209,8 +206,8 @@ create table if not exists climbingwall.routes (
   color1 varchar(20),
   color2 varchar(20),
   symbol varchar(20),
-  setter1 integer not null references climbingwall.setters,
-  setter2 integer references climbingwall.setters,
+  setter1_id integer not null references climbingwall.setters,
+  setter2_id integer references climbingwall.setters,
   description varchar(255),
   active boolean not null default true,
   set_on date,
