@@ -1,0 +1,45 @@
+id,section_id,name,sort
+1,1,Entry Wall,1
+2,1,Walls Facing the Bulge,2
+3,1,Archway,3
+4,1,Facing Wally McWallface,4
+5,1,Under Campus Boards,5
+6,1,Facing Lobby,6
+7,1,Right of Entry Wall,7
+8,2,Left,1
+9,2,Middle,2
+10,2,Right,3
+11,3,Entrance Wall Left,1
+12,3,Interior Left,2
+13,3,Interior Back + Right,3
+14,3,Entrance Wall Right,4
+15,4,Left,1
+16,4,Middle,2
+17,4,Right,3
+18,5,Left to Right,1
+19,6,Left to Right,1
+20,7,Left + Arch,1
+21,7,Right + Wall,2
+22,8,Wall + Tunnel Opening,1
+23,9,Kiki (Right),1
+24,9,Bouba (Left),2
+25,10,Right Side + Chimney,1
+26,10,Left Side,2
+27,10,Back Side,3
+28,11,Right Side,1
+29,11,Left Side,2
+30,12,Mouth,1
+31,12,Throat,2
+32,13,3pm (Tunnel Mouth),1
+33,13,6m (Angled),2
+34,13,9pm (Twins),3
+35,13,Midnight,4
+36,14,Wall 1,1
+37,15,Wall 2,1
+38,16,Wall 3,1
+39,17,Wall 4,1
+40,18,Wall 5,1
+41,19,Wall 6,1
+42,20,Wall 7,1
+43,21,Wall 8,1
+44,22,Wall 9,1

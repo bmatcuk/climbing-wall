@@ -1,0 +1,120 @@
+:root {
+  --bgcolor: #fcffff;
+  --bgselected: #e0e3e3;
+  --neutral-color: #5f3713;
+  --neutral-50: #5f37137f;
+  --neutral-25: #5f37133f;
+  --accent-color: #fc4819;
+
+  --checkbox-border: var(--neutral-color);
+  --checkbox-background: var(--bgcolor);
+  --checkbox-checked: var(--neutral-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bgcolor: #052230;
+    --bgselected: #193342;
+    --neutral-color: #f9fbfc;
+    --neutral-50: #f9fbfc7f;
+    --neutral-25: #f9fbfc3f;
+    --accent-color: #fc4819;
+
+    --checkbox-border: var(--bgcolor);
+    --checkbox-background: var(--neutral-color);
+    --checkbox-checked: var(--bgcolor);
+  }
+}
+
+html {
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bgcolor);
+  color: var(--neutral-color);
+  font-family: 'Hind Madurai', helvetica, arial, sans-serif;
+  font-weight: 300;
+  margin: 0;
+  padding: 1em;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-top: 0;
+}
+
+h1 {
+  color: var(--accent-color);
+  font-family: 'Montserrat', helvetica, arial, sans-serif;
+  font-weight: 700;
+}
+
+h2,
+fieldset > legend {
+  font-family: 'Lora', Georgia, times, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: inherit;
+}
+
+fieldset {
+  border-width: 1px 0 0;
+  border-color: var(--neutral-25);
+  border-style: solid;
+}
+
+input {
+  font: inherit;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+form label > input {
+  background-color: inherit;
+  border-width: 0 0 1px;
+  border-color: var(--neutral-25);
+  border-style: solid;
+  color: inherit;
+  outline-width: 0;
+  margin-left: 0.5em;
+}
+
+form label > input:focus {
+  border-color: var(--accent-color);
+}
+
+form label > input::placeholder {
+  color: var(--neutral-50);
+}
+
+form input[type="submit"] {
+  background-color: var(--accent-color);
+  border-radius: 3px;
+  border-width: 0;
+  color: var(--neutral-color);
+  padding: 0.25em 1em;
+}
+
+p.error {
+  background-color: var(--bgselected);
+  border-radius: 3px;
+}
+
+main {
+  max-width: 100ch;
+  margin: 0 auto;
+}

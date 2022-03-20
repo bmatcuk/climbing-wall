@@ -1,0 +1,33 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header h1.mobile {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .header h1.desktop {
+    display: none;
+  }
+
+  .header h1.mobile {
+    display: block;
+  }
+}
+
+.header menu {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header menu li + li {
+  margin-left: 1em;
+}
+
+.header menu a {
+  text-decoration: none;
+}

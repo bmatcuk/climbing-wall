@@ -1,0 +1,23 @@
+id,room_id,name,sort
+1,1,The Block,1
+2,1,The Alcove,2
+3,1,Cave,3
+4,1,The 30/20,4
+5,1,Roof Escape,5
+6,1,The 45,6
+7,1,Slab,7
+8,1,Wally McWallface,8
+9,1,The Bulge,9
+10,1,Vert Walls,10
+11,1,The Cliff,11
+12,1,Tunnel,12
+13,1,Inner Sanctum,13
+14,2,Wall 1,1
+15,2,Wall 2,2
+16,2,Wall 3,3
+17,2,Wall 4,4
+18,2,Wall 5,5
+19,2,Wall 6,6
+20,2,Wall 7,7
+21,2,Wall 8,8
+22,2,Wall 9,9

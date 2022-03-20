@@ -1,0 +1,24 @@
+.room-switcher {
+  display: flex;
+  list-style: none;
+  justify-content: space-evenly;
+}
+
+.room-switcher li {
+  border-radius: 3px;
+  padding: 0.25em 1em;
+}
+
+.room-switcher li.active {
+  background-color: var(--bgselected);
+}
+
+.room-switcher li a {
+  text-decoration: none;
+  color: var(--neutral-50);
+}
+
+.room-switcher li.active a,
+.room-switcher li:hover a {
+  color: var(--neutral-color);
+}
