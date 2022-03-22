@@ -2,22 +2,25 @@ import type { FunctionComponent } from "preact"
 import { useCallback, useEffect, useReducer, useState } from "preact/hooks"
 
 import RouteItem from "./RouteItem"
+import EditRouteItem from "./EditRouteItem"
 import type { User } from "./api/user"
 import {
-  Room,
-  Section,
-  SubSection,
-  Setter,
-  Route,
   CompletedRoute,
-  getRooms,
-  getSections,
-  getSubSections,
-  getSetters,
-  getRoutes,
+  NewRoute,
+  Room,
+  Route,
+  Section,
+  Setter,
+  SubSection,
   getCompletedRoutes,
+  getRooms,
+  getRoutes,
+  getSections,
+  getSetters,
+  getSubSections,
   markRouteComplete,
   markRouteIncomplete,
+  saveRoute,
 } from "./api/routes"
 
 import styles from "./dashboard.module.css"
@@ -64,6 +67,69 @@ function mapOf<T, K extends keyof T>(ary: T[], mapBy: K): Map<T[K], T> {
     map.set(item[mapBy], item)
   })
   return map
+}
+
+/**
+ * Updates the route table with the given updates
+ * @param table The table to update
+ * @param updates The updated route(s)
+ * @returns a new table
+ */
+function updateRouteTable(
+  table: Map<number, Route[]>,
+  updates: Route[]
+): Map<number, Route[]> {
+  const newTable = new Map(table)
+  const updatedSubSections = new Set<number>()
+  updates.forEach((update) => {
+    let routes = newTable.get(update.subsection_id)
+    if (routes) {
+      if (!updatedSubSections.has(update.subsection_id)) {
+        routes = [...routes]
+        newTable.set(update.subsection_id, routes)
+        updatedSubSections.add(update.subsection_id)
+      }
+
+      const idx = routes.findIndex((r) => r.id === update.id)
+      if (idx === -1) {
+        if (update.active) {
+          routes.push(update)
+        }
+      } else if (update.active) {
+        routes[idx] = update
+      } else {
+        routes.splice(idx, 1)
+      }
+    }
+  })
+  return newTable
+}
+
+/**
+ * @param routes The route table
+ * @param subsection_id The subsection id
+ * @returns a new route object
+ */
+function buildNewRoute(
+  routes: Map<number, Route[]>,
+  subsection_id: number
+): NewRoute {
+  const sort =
+    (routes.get(subsection_id) || []).reduce((m, r) => Math.max(m, r.sort), 0) +
+    1
+  return {
+    subsection_id,
+    difficulty: null,
+    difficulty_mod: 0,
+    color1: null,
+    color2: null,
+    symbol: null,
+    setter1_id: 7,
+    setter2_id: null,
+    description: null,
+    set_on: null,
+    sort,
+  }
 }
 
 type InitializeAction = {
@@ -119,6 +185,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
     completedRoutesReducer,
     new Map<number, CompletedRoute>()
   )
+  const [editing, setEditing] = useState<number | undefined>()
 
   const switchRooms = useCallback((evt: Event) => {
     evt.preventDefault()
@@ -141,6 +208,22 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
         dispatchCompletedRoutes({ type: "incomplete", routeId })
       }),
     [jwt, user]
+  )
+
+  const toggleEditing = useCallback((evt: Event) => {
+    evt.preventDefault()
+
+    const target = evt.target as HTMLAnchorElement
+    const subsectionId = Number(target.dataset.subsectionId)
+    setEditing((v) => (v === subsectionId ? undefined : subsectionId))
+  }, [])
+
+  const doSaveRoute = useCallback(
+    (route: NewRoute | Route) =>
+      saveRoute(jwt, route).then((savedRoute) => {
+        setRoutes((r) => r && updateRouteTable(r, [savedRoute]))
+      }),
+    [jwt]
   )
 
   useEffect(() => {
@@ -199,23 +282,58 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
           </header>
           {(subsections.get(section.id) || []).map((subsection) => (
             <section key={`subsection${subsection.id}`}>
-              {selectedRoomId === 1 && (
+              {(selectedRoomId === 1 || user.role === "webadmin") && (
                 <header>
-                  <h3>{subsection.name}</h3>
+                  <h3>
+                    {subsection.name}
+                    {user.role === "webadmin" && (
+                      <small>
+                        &nbsp;
+                        <a
+                          href="#"
+                          class={`${styles.edit} ${
+                            subsection.id === editing ? styles.active : ""
+                          }`}
+                          onClick={toggleEditing}
+                          data-subsection-id={subsection.id}
+                        >
+                          &#9998;
+                        </a>
+                      </small>
+                    )}
+                  </h3>
                 </header>
               )}
               <ol>
-                {(routes.get(subsection.id) || []).map((route) => (
-                  <RouteItem
-                    key={`route${route.id}`}
-                    route={route}
+                {(routes.get(subsection.id) || []).map((route) =>
+                  editing === subsection.id ? (
+                    <EditRouteItem
+                      key={`route${route.id}`}
+                      route={route}
+                      setters={setters}
+                      toprope={selectedRoomId === 2}
+                      saveRoute={doSaveRoute}
+                    />
+                  ) : (
+                    <RouteItem
+                      key={`route${route.id}`}
+                      route={route}
+                      setters={setters}
+                      toprope={selectedRoomId === 2}
+                      completed={completedRoutes.get(route.id)}
+                      markRouteComplete={doMarkRouteComplete}
+                      markRouteIncomplete={doMarkRouteIncomplete}
+                    />
+                  )
+                )}
+                {editing === subsection.id && (
+                  <EditRouteItem
+                    route={buildNewRoute(routes, subsection.id)}
                     setters={setters}
                     toprope={selectedRoomId === 2}
-                    completed={completedRoutes.get(route.id)}
-                    markRouteComplete={doMarkRouteComplete}
-                    markRouteIncomplete={doMarkRouteIncomplete}
+                    saveRoute={doSaveRoute}
                   />
-                ))}
+                )}
               </ol>
             </section>
           ))}

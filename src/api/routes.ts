@@ -35,10 +35,12 @@ export type Route = {
   setter2_id: number | null
   description: string | null
   active: boolean
-  set_on: Date | null
-  updated_on: Date | null
+  set_on: string | null
+  updated_on: string | null
   sort: number
 }
+
+export type NewRoute = Omit<Route, "id" | "active" | "updated_on">
 
 export type CompletedRoute = {
   route_id: number
@@ -48,7 +50,7 @@ export type CompletedRoute = {
 export async function getRooms(jwt: string): Promise<Room[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/rooms", process.env.API_BASE)
+    const url = new URL("rooms", process.env.API_BASE)
     url.searchParams.set("select", "id,name")
     url.searchParams.set("order", "sort")
 
@@ -75,7 +77,7 @@ export async function getRooms(jwt: string): Promise<Room[]> {
 export async function getSections(jwt: string): Promise<Section[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/sections", process.env.API_BASE)
+    const url = new URL("sections", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -99,7 +101,7 @@ export async function getSections(jwt: string): Promise<Section[]> {
 export async function getSubSections(jwt: string): Promise<SubSection[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/subsections", process.env.API_BASE)
+    const url = new URL("subsections", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -123,7 +125,7 @@ export async function getSubSections(jwt: string): Promise<SubSection[]> {
 export async function getSetters(jwt: string): Promise<Setter[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/setters", process.env.API_BASE)
+    const url = new URL("setters", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -147,7 +149,9 @@ export async function getSetters(jwt: string): Promise<Setter[]> {
 export async function getRoutes(jwt: string): Promise<Route[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/routes", process.env.API_BASE)
+    const url = new URL("routes", process.env.API_BASE)
+    url.searchParams.set("active", "is.true")
+
     response = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -168,12 +172,50 @@ export async function getRoutes(jwt: string): Promise<Route[]> {
   }
 }
 
+export function isRouteSaved(route: NewRoute | Route): route is Route {
+  return "id" in route && typeof route.id === "number"
+}
+
+export async function saveRoute(
+  jwt: string,
+  route: NewRoute | Route
+): Promise<Route> {
+  const update = isRouteSaved(route)
+  let response: Response | null = null
+  try {
+    const url = new URL("routes", process.env.API_BASE)
+    if (update) {
+      url.searchParams.set("id", `eq.${route.id}`)
+    }
+
+    response = await fetch(url.toString(), {
+      method: update ? "PATCH" : "POST",
+      body: JSON.stringify(route),
+      headers: {
+        Accept: "application/vnd.pgrst.object+json",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+    })
+  } catch (e) {
+    throw "Could not connect to API"
+  }
+
+  if (response.ok) {
+    return response.json()
+  } else {
+    const err = await response.json()
+    throw err.message
+  }
+}
+
 export async function getCompletedRoutes(
   jwt: string
 ): Promise<CompletedRoute[]> {
   let response: Response | null = null
   try {
-    const url = new URL("/completed_routes", process.env.API_BASE)
+    const url = new URL("completed_routes", process.env.API_BASE)
     url.searchParams.set("route.active", "is.true")
 
     response = await fetch(url.toString(), {
@@ -203,7 +245,7 @@ export async function markRouteComplete(
 ): Promise<CompletedRoute> {
   let response: Response | null = null
   try {
-    const url = new URL("/completed_routes", process.env.API_BASE)
+    const url = new URL("completed_routes", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "POST",
       body: JSON.stringify({ user_id, route_id }),
@@ -233,10 +275,9 @@ export async function markRouteIncomplete(
 ): Promise<void> {
   let response: Response | null = null
   try {
-    const url = new URL("/completed_routes", process.env.API_BASE)
+    const url = new URL("completed_routes", process.env.API_BASE)
     url.searchParams.set("user_id", `eq.${user_id}`)
     url.searchParams.set("route_id", `eq.${route_id}`)
-    url.searchParams.set("limit", "1")
 
     response = await fetch(url.toString(), {
       method: "DELETE",

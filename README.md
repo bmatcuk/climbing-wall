@@ -12,7 +12,7 @@ yarn run start
 
 ## Building
 Create a `.env.production.local` file with the path to the postgrest api on the
-production server, then run:
+production server. NOTE: url _must_ end in a slash! Then run:
 
 ```bash
 rm -drf dist && yarn run build

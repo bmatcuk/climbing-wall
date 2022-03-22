@@ -23,7 +23,7 @@ export async function createUser(
 ): Promise<TokenAndUser> {
   let response: Response | null = null
   try {
-    const url = new URL("/rpc/create_user", process.env.API_BASE)
+    const url = new URL("rpc/create_user", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "POST",
       body: JSON.stringify({ username, pass }),
@@ -63,7 +63,7 @@ export async function login(
 ): Promise<TokenAndUser> {
   let response: Response | null = null
   try {
-    const url = new URL("/rpc/login", process.env.API_BASE)
+    const url = new URL("rpc/login", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "POST",
       body: JSON.stringify({ username, pass }),
@@ -99,7 +99,7 @@ export async function changePassword(
 ): Promise<void> {
   let response: Response | null = null
   try {
-    const url = new URL("/rpc/change_password", process.env.API_BASE)
+    const url = new URL("rpc/change_password", process.env.API_BASE)
     response = await fetch(url.toString(), {
       method: "POST",
       body: JSON.stringify({ oldpass, newpass }),

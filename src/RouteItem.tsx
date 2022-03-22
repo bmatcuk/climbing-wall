@@ -2,6 +2,7 @@ import type { FunctionComponent } from "preact"
 import { useCallback, useState } from "preact/hooks"
 
 import type { Route, Setter, CompletedRoute } from "./api/routes"
+import RouteItemDisplay from "./RouteItemDisplay"
 
 import styles from "./routeitem.module.css"
 
@@ -13,41 +14,6 @@ type Props = {
   markRouteComplete(routeId: number): Promise<void>
   markRouteIncomplete(routeId: number): Promise<void>
 }
-
-/**
- * @param route A route
- * @param toprope Difficulties are different in top-rope
- * @returns a string representing the route's difficulty
- */
-function difficulty(
-  { difficulty, difficulty_mod }: Route,
-  toprope: boolean
-): string {
-  if (toprope) {
-    if (difficulty === 1) {
-      return "EASY"
-    } else if (difficulty === 2) {
-      return "MOD"
-    } else if (difficulty === 3) {
-      return "HARD"
-    }
-    return "?"
-  }
-  if (!difficulty) {
-    return "V?"
-  }
-
-  const mod = difficulty_mod < 0 ? "-" : difficulty_mod > 0 ? "+" : ""
-  return `V${difficulty === -1 ? "B" : difficulty}${mod}`
-}
-
-const SetterAbbr: FunctionComponent<{ setter: Setter | undefined }> = ({
-  setter,
-}) => (
-  <abbr title={setter ? setter.name : "(?)"}>
-    {setter ? setter.abbr : "(?)"}
-  </abbr>
-)
 
 const RouteItem: FunctionComponent<Props> = ({
   route,
@@ -78,21 +44,7 @@ const RouteItem: FunctionComponent<Props> = ({
           onChange={toggle}
           disabled={toggling}
         />
-        <strong>{difficulty(route, toprope)}</strong>
-        &nbsp;
-        {route.description}
-        &nbsp;
-        {route.setter2_id ? (
-          <small>
-            <SetterAbbr setter={setters.get(route.setter1_id)} />
-            +
-            <SetterAbbr setter={setters.get(route.setter2_id)} />
-          </small>
-        ) : (
-          <small>
-            <SetterAbbr setter={setters.get(route.setter1_id)} />
-          </small>
-        )}
+        <RouteItemDisplay route={route} setters={setters} toprope={toprope} />
       </label>
     </li>
   )

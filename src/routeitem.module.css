@@ -34,3 +34,36 @@
 .route-item input[type="checkbox"]:checked + strong::before {
   background-color: var(--checkbox-checked);
 }
+
+.route-item.edit strong::before {
+  display: inline-block;
+  content: "\270E";
+  margin-right: 1em;
+  width: 1em;
+}
+
+.route-item.edit form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  max-width: 450px;
+}
+
+.route-item.edit select {
+  height: 1.86em;
+  font: inherit;
+}
+
+.route-item.edit form input[type="text"] {
+  flex-basis: 100%;
+  height: 1.86em;
+}
+
+.route-item.edit form a {
+  line-height: 1.86em;
+}
+
+.route-item.edit dialog menu {
+  display: flex;
+  justify-content: space-between;
+}

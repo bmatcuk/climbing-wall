@@ -22,3 +22,18 @@
 .room-switcher li:hover a {
   color: var(--neutral-color);
 }
+
+a.edit:link,
+a.edit:visited,
+a.edit:hover,
+a.edit:active {
+  color: var(--neutral-50);
+  text-decoration: none;
+}
+
+a.edit.active:link,
+a.edit.active:visited,
+a.edit.active:hover,
+a.edit.active:active {
+  color: var(--accent-color);
+}

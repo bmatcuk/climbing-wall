@@ -256,3 +256,10 @@ grant webuser to webauth;
 grant usage on schema climbingwall to webuser;
 grant select on all tables in schema climbingwall to webuser;
 grant insert, update, delete on climbingwall.completed_routes to webuser;
+
+-- admin can edit stuff
+create role webadmin nologin;
+grant webuser to webadmin;
+grant webadmin to webauth;
+grant insert, update on climbingwall.routes to webadmin;
+grant all on climbingwall.routes_id_seq to webadmin;

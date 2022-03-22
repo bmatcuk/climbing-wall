@@ -108,6 +108,9 @@ form input[type="submit"] {
   border-width: 0;
   color: var(--neutral-color);
   padding: 0.25em 1em;
+}
+
+form label + input[type="submit"] {
   margin-top: 1em;
 }
 
