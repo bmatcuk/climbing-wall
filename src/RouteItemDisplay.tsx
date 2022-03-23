@@ -28,7 +28,7 @@ export function difficultyToString(
     }
     return "?"
   }
-  if (!difficulty) {
+  if (difficulty === null) {
     return "V?"
   }
 
