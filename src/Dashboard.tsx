@@ -1,5 +1,11 @@
 import type { FunctionComponent } from "preact"
-import { useCallback, useEffect, useReducer, useState } from "preact/hooks"
+import {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "preact/hooks"
 
 import RouteItem from "./RouteItem"
 import EditRouteItem from "./EditRouteItem"
@@ -20,6 +26,7 @@ import {
   getSubSections,
   markRouteComplete,
   markRouteIncomplete,
+  reorderRoutes,
   saveRoute,
 } from "./api/routes"
 
@@ -102,6 +109,12 @@ function updateRouteTable(
       }
     }
   })
+  updatedSubSections.forEach((ssid) => {
+    const lst = newTable.get(ssid)
+    if (lst) {
+      lst.sort((a, b) => a.sort - b.sort)
+    }
+  })
   return newTable
 }
 
@@ -172,6 +185,19 @@ function completedRoutesReducer(
   return state
 }
 
+function getOrderedRoutes(
+  routes: Route[],
+  reorderedIds: number[] | undefined
+): Route[] {
+  if (!reorderedIds) {
+    return routes
+  }
+
+  const m = new Map<number, Route>()
+  routes.forEach((r) => m.set(r.id, r))
+  return reorderedIds.map((id) => m.get(id)).filter(Boolean) as Route[]
+}
+
 const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
   const [rooms, setRooms] = useState<Room[] | undefined>()
   const [selectedRoomId, setSelectedRoomId] = useState(0)
@@ -186,6 +212,8 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
     new Map<number, CompletedRoute>()
   )
   const [editing, setEditing] = useState<number | undefined>()
+  const [reorderedIds, setReorderedIds] = useState<number[] | undefined>()
+  const draggingRoute = useRef<Route>()
 
   const switchRooms = useCallback((evt: Event) => {
     evt.preventDefault()
@@ -216,6 +244,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
     const target = evt.target as HTMLAnchorElement
     const subsectionId = Number(target.dataset.subsectionId)
     setEditing((v) => (v === subsectionId ? undefined : subsectionId))
+    setReorderedIds(undefined)
   }, [])
 
   const doSaveRoute = useCallback(
@@ -224,6 +253,66 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
         setRoutes((r) => r && updateRouteTable(r, [savedRoute]))
       }),
     [jwt]
+  )
+
+  const dragStart = useCallback(
+    (route: Route, evt: DragEvent) => {
+      if (evt.dataTransfer) {
+        const { innerText, outerHTML } = evt.target as HTMLLIElement
+        evt.dataTransfer.setData("text/plain", innerText)
+        evt.dataTransfer.setData("text/html", outerHTML)
+        evt.dataTransfer.dropEffect = "move"
+
+        const routeList = [...(routes?.get(route.subsection_id) || [])]
+        routeList.sort((a, b) => a.sort - b.sort)
+        setReorderedIds(routeList.map((route) => route.id))
+        draggingRoute.current = route
+      }
+    },
+    [routes]
+  )
+
+  const dragOver = useCallback((route: Route, evt: DragEvent) => {
+    evt.preventDefault()
+    if (evt.dataTransfer) {
+      evt.dataTransfer.dropEffect = "move"
+
+      setReorderedIds((reorderedIds) => {
+        if (
+          reorderedIds &&
+          draggingRoute.current &&
+          draggingRoute.current.id !== route.id
+        ) {
+          const draggingIdx = reorderedIds.indexOf(draggingRoute.current.id)
+          const thisIdx = reorderedIds.indexOf(route.id)
+          const newReorderedIds = [...reorderedIds]
+          newReorderedIds.splice(draggingIdx, 1)
+          newReorderedIds.splice(thisIdx, 0, draggingRoute.current.id)
+          return newReorderedIds
+        }
+        return reorderedIds
+      })
+    }
+  }, [])
+
+  const dragEnd = useCallback(
+    (evt: DragEvent) => {
+      evt.preventDefault()
+      if (
+        evt.dataTransfer &&
+        evt.dataTransfer.dropEffect === "move" &&
+        reorderedIds
+      ) {
+        const idSortMap = reorderedIds.map((id, sort) => ({ id, sort }))
+        reorderRoutes(jwt, idSortMap).then((updatedRoutes) => {
+          setRoutes((r) => r && updateRouteTable(r, updatedRoutes))
+          setReorderedIds(undefined)
+        })
+      } else {
+        setReorderedIds(undefined)
+      }
+    },
+    [reorderedIds]
   )
 
   useEffect(() => {
@@ -305,7 +394,10 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
                 </header>
               )}
               <ol>
-                {(routes.get(subsection.id) || []).map((route) =>
+                {getOrderedRoutes(
+                  routes.get(subsection.id) || [],
+                  editing === subsection.id ? reorderedIds : undefined
+                ).map((route) =>
                   editing === subsection.id ? (
                     <EditRouteItem
                       key={`route${route.id}`}
@@ -313,6 +405,10 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
                       setters={setters}
                       toprope={selectedRoomId === 2}
                       saveRoute={doSaveRoute}
+                      dragStart={dragStart}
+                      dragOver={dragOver}
+                      drop={dragOver}
+                      dragEnd={dragEnd}
                     />
                   ) : (
                     <RouteItem
@@ -332,6 +428,10 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
                     setters={setters}
                     toprope={selectedRoomId === 2}
                     saveRoute={doSaveRoute}
+                    dragStart={dragStart}
+                    dragOver={dragOver}
+                    drop={dragOver}
+                    dragEnd={dragEnd}
                   />
                 )}
               </ol>

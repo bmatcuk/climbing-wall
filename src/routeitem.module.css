@@ -2,6 +2,14 @@
   margin-bottom: 0.2em;
 }
 
+.route-item svg {
+  background: transparent;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 0.5em;
+}
+
 .route-item strong {
   display: inline-block;
   min-width: calc(3.5ch + 2em);

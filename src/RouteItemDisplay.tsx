@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "preact"
 
 import { Route, NewRoute, Setter, isRouteSaved } from "./api/routes"
+import RouteColors from "./RouteColors"
 
 type Props = {
   route: NewRoute | Route
@@ -51,6 +52,11 @@ const RouteItemDisplay: FunctionComponent<Props> = ({
 }) => (
   <>
     <strong>
+      <RouteColors
+        color1={route.color1}
+        color2={route.color2}
+        symbol={route.symbol}
+      />
       {difficultyToString(route.difficulty, route.difficulty_mod, toprope)}
     </strong>
     &nbsp;

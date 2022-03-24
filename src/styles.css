@@ -9,6 +9,14 @@
   --checkbox-border: var(--neutral-color);
   --checkbox-background: var(--bgcolor);
   --checkbox-checked: var(--neutral-color);
+
+  --pink: #bd269f;
+  --red: #bd2626;
+  --orange: #bd7926;
+  --yellow: #bda426;
+  --green: #53bd26;
+  --blue: #265bbd;
+  --purple: #8326bd;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,6 +31,14 @@
     --checkbox-border: var(--bgcolor);
     --checkbox-background: var(--neutral-color);
     --checkbox-checked: var(--bgcolor);
+
+    --pink: #b513a5;
+    --red: #b51313;
+    --orange: #b55613;
+    --yellow: #b5b213;
+    --green: #33b513;
+    --blue: #135fb5;
+    --purple: #7a13b5;
   }
 }
 

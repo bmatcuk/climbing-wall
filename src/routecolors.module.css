@@ -1,0 +1,47 @@
+.routecolor rect.black {
+  fill: black;
+}
+
+.routecolor rect.white {
+  fill: white;
+}
+
+.routecolor rect.pink {
+  fill: var(--pink);
+}
+
+.routecolor rect.red {
+  fill: var(--red);
+}
+
+.routecolor rect.orange {
+  fill: var(--orange);
+}
+
+.routecolor rect.yellow {
+  fill: var(--yellow);
+}
+
+.routecolor rect.green {
+  fill: var(--green);
+}
+
+.routecolor rect.blue {
+  fill: var(--blue);
+}
+
+.routecolor rect.purple {
+  fill: var(--purple);
+}
+
+.routecolor circle,
+.routecolor path {
+  stroke-width: 1px;
+  stroke: black;
+  fill: transparent;
+}
+
+.routecolor text {
+  fill: black;
+  font-size: 13px;
+}

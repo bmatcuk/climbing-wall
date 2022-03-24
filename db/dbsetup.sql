@@ -216,6 +216,17 @@ create table if not exists climbingwall.routes (
 );
 create index routes_active_subsection_id_sort_key on climbingwall.routes(active asc, subsection_id asc, sort asc);
 
+-- function to update route sort order
+create or replace function
+climbingwall.reorder_routes(id_sort_map json) returns setof climbingwall.routes as $$
+begin
+  return query update climbingwall.routes set sort = updates.sort
+    from json_to_recordset(id_sort_map) as updates(id integer, sort smallint)
+    where routes.id = updates.id
+    returning routes.*;
+end;
+$$ language plpgsql;
+
 
 -- HYBRID STUFF: both in the secret schema and public
 

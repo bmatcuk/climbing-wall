@@ -66,7 +66,9 @@ const SYMBOLS = [
   "squares",
   "squiggles",
   "triangle wave",
+  "triangles",
   "x's",
+  "YP",
 ]
 
 const MONTHS = [
@@ -94,6 +96,10 @@ type Props = {
   setters: Map<number, Setter>
   toprope: boolean
   saveRoute(route: NewRoute | Route): Promise<void>
+  dragStart(route: Route, evt: DragEvent): void
+  dragOver(route: Route, evt: DragEvent): void
+  drop(route: Route, evt: DragEvent): void
+  dragEnd(evt: DragEvent): void
 }
 
 /**
@@ -147,6 +153,10 @@ const EditRouteItem: FunctionComponent<Props> = ({
   setters,
   toprope,
   saveRoute,
+  dragStart,
+  dragOver,
+  drop,
+  dragEnd,
 }) => {
   const [editing, setEditing] = useState(false)
   const [difficulty, setDifficulty] = useState("")
@@ -160,6 +170,8 @@ const EditRouteItem: FunctionComponent<Props> = ({
   const [setDay, setSetDay] = useState(0)
   const [saving, setSaving] = useState(false)
   const retireDialog = useRef<HTMLDialogElement>(null)
+  const settersArray = [...setters.values()]
+  const savedRoute = isRouteSaved(route)
 
   useEffect(() => {
     setDifficulty(
@@ -295,10 +307,42 @@ const EditRouteItem: FunctionComponent<Props> = ({
     [route, saveRoute]
   )
 
-  const settersArray = [...setters.values()]
-  const savedRoute = isRouteSaved(route)
+  const doDragStart = useCallback(
+    (evt: DragEvent) => {
+      if (savedRoute) {
+        dragStart(route, evt)
+      }
+    },
+    [route, dragStart, savedRoute]
+  )
+
+  const doDragOver = useCallback(
+    (evt: DragEvent) => {
+      if (savedRoute) {
+        dragOver(route, evt)
+      }
+    },
+    [route, dragOver, savedRoute]
+  )
+
+  const doDrop = useCallback(
+    (evt: DragEvent) => {
+      if (savedRoute) {
+        drop(route, evt)
+      }
+    },
+    [route, drop, savedRoute]
+  )
+
   return (
-    <li class={`${styles["route-item"]} ${styles.edit}`}>
+    <li
+      class={`${styles["route-item"]} ${styles.edit}`}
+      draggable={savedRoute && !editing}
+      onDragStart={doDragStart}
+      onDragOver={doDragOver}
+      onDrop={doDrop}
+      onDragEnd={dragEnd}
+    >
       {editing ? (
         <form onSubmit={submit}>
           <select

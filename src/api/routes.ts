@@ -296,3 +296,32 @@ export async function markRouteIncomplete(
     throw err.message
   }
 }
+
+export async function reorderRoutes(
+  jwt: string,
+  idSortMap: Array<{ id: number; sort: number }>
+): Promise<Route[]> {
+  let response: Response | null = null
+  try {
+    const url = new URL("rpc/reorder_routes", process.env.API_BASE)
+    response = await fetch(url.toString(), {
+      method: "POST",
+      body: JSON.stringify(idSortMap),
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+        Prefer: "params=single-object",
+      },
+    })
+  } catch (e) {
+    throw "Could not connect to API"
+  }
+
+  if (response.ok) {
+    return response.json()
+  } else {
+    const err = await response.json()
+    throw err.message
+  }
+}
