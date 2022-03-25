@@ -12,14 +12,19 @@ const Symbol: FunctionComponent<{ symbol: string }> = ({ symbol }) => {
   if (symbol === "circles") {
     return <circle cx="9" cy="9" r="7" />
   } else if (symbol === "dashes") {
-    return <path d="M0,2h18m0,4h-18m0,4h18m0,4h-18m0,4h18" />
+    return <path d="M9,0v3m0,3v3m0,3v3" />
+  } else if (symbol === "double line") {
+    return <path d="M7,0v18m4,0v-18" />
   } else if (symbol === "hearts") {
     return <path d="M9,16L2,5.5A3.5 3.5 90 0 1 9 5.5,3.5 3.5 90 0 1 16 5.5z" />
+  } else if (symbol === "horz lines") {
+    return <path d="M0,2h18m0,4h-18m0,4h18m0,4h-18m0,4h18" />
   } else if (symbol === "line") {
     return <path d="M9,0v18" />
   } else if (symbol === "sine wave") {
-    // TODO
-    return <path d="M0,9" />
+    return (
+      <path d="M0,-4.5c0 3.2778 18 5.7222 18 9,0 3.2778 -18 5.7222 -18 9,0 3.2778 18 5.7222 18 9" />
+    )
   } else if (symbol === "smiley") {
     return (
       <>
@@ -32,8 +37,9 @@ const Symbol: FunctionComponent<{ symbol: string }> = ({ symbol }) => {
   } else if (symbol === "squares") {
     return <path d="M2,2h14v14h-14z" />
   } else if (symbol === "squiggles") {
-    // TODO
-    return <path d="M0,9" />
+    return (
+      <path d="M0,-4.5c0 1.0926 18 1.9074 18 3,0 1.0926 -18 1.9074 -18 3,0 1.0926 18 1.9074 18 3,0 1.0926 -18 1.9074 -18 3,0 1.0926 18 1.9074 18 3,0 1.0926 -18 1.9074 -18 3,0 1.0926 18 1.9074 18 3,0 1.0926 -18 1.9074 -18 3" />
+    )
   } else if (symbol === "triangle wave") {
     return <path d="M9,0l4.5,4.5 -9,9 4.5,4.5" />
   } else if (symbol === "triangles") {

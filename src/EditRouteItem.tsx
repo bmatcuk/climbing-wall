@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks"
 
 import { NewRoute, Route, Setter, isRouteSaved } from "./api/routes"
 import RouteItemDisplay, { difficultyToString } from "./RouteItemDisplay"
+import { zeroPad } from "./utils"
 
 import styles from "./routeitem.module.css"
 
@@ -45,21 +46,23 @@ const TOPROPE_RATINGS = ["?", "EASY", "MOD", "HARD"]
 const COLORS = [
   "",
   "black",
-  "white",
-  "pink",
-  "red",
-  "orange",
-  "yellow",
-  "green",
   "blue",
+  "green",
+  "orange",
+  "pink",
   "purple",
+  "red",
+  "white",
+  "yellow",
 ]
 
 const SYMBOLS = [
   "",
   "circles",
   "dashes",
+  "double line",
   "hearts",
+  "horz lines",
   "line",
   "sine wave",
   "smiley",
@@ -139,7 +142,6 @@ function monthDayToDate(month: string, day: number): string | null {
     return null
   }
 
-  const zeroPad = (n: number): string => (n < 10 ? `0${n}` : String(n))
   const today = new Date()
   const year =
     monthIdx > today.getMonth() || day > today.getDate()

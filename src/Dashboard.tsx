@@ -29,6 +29,8 @@ import {
   reorderRoutes,
   saveRoute,
 } from "./api/routes"
+import { mapArray, mapOf, zeroPad } from "./utils"
+import { completedRoutesReducer } from "./completed-routes-reducer"
 
 import styles from "./dashboard.module.css"
 
@@ -37,43 +39,27 @@ type Props = {
   user: User
 }
 
-/**
- * Essentially does a "group by" and sort on an array.
- * @param ary The array to group and sort
- * @param mapBy The property to group by
- * @param sortBy The property to sort the groups by
- * @returns a map of groups
- */
-function mapArray<
-  T extends Record<S, number>,
-  K extends keyof T,
-  S extends { [P in keyof T]: T[P] extends number ? P : never }[keyof T]
->(ary: T[], mapBy: K, sortBy: S): Map<T[K], T[]> {
-  const map = new Map<T[K], T[]>()
-  ary.forEach((item) => {
-    let lst = map.get(item[mapBy])
-    if (!lst) {
-      lst = []
-      map.set(item[mapBy], lst)
+const ROUTE_SORTS = {
+  "Left-to-Right": (a: Route, b: Route) => a.sort - b.sort,
+  Difficulty: (a: Route, b: Route) => {
+    if (a.difficulty === null) {
+      if (b.difficulty === null) {
+        return a.id - b.id
+      }
+      return -1
+    } else if (b.difficulty === null) {
+      return 1
     }
-    lst.push(item)
-  })
-  map.forEach((lst) => lst.sort((a, b) => a[sortBy] - b[sortBy]))
-  return map
-}
 
-/**
- * Given an array, produces a map of an id to those objects
- * @param ary The array
- * @param mapBy The key
- * @returns a map
- */
-function mapOf<T, K extends keyof T>(ary: T[], mapBy: K): Map<T[K], T> {
-  const map = new Map<T[K], T>()
-  ary.forEach((item) => {
-    map.set(item[mapBy], item)
-  })
-  return map
+    let sort = a.difficulty - b.difficulty
+    if (sort === 0) {
+      sort = a.difficulty_mod - b.difficulty_mod
+      if (sort === 0) {
+        sort = a.id - b.id
+      }
+    }
+    return sort
+  },
 }
 
 /**
@@ -84,7 +70,8 @@ function mapOf<T, K extends keyof T>(ary: T[], mapBy: K): Map<T[K], T> {
  */
 function updateRouteTable(
   table: Map<number, Route[]>,
-  updates: Route[]
+  updates: Route[],
+  sortBy: keyof typeof ROUTE_SORTS
 ): Map<number, Route[]> {
   const newTable = new Map(table)
   const updatedSubSections = new Set<number>()
@@ -112,7 +99,7 @@ function updateRouteTable(
   updatedSubSections.forEach((ssid) => {
     const lst = newTable.get(ssid)
     if (lst) {
-      lst.sort((a, b) => a.sort - b.sort)
+      lst.sort(ROUTE_SORTS[sortBy])
     }
   })
   return newTable
@@ -127,6 +114,7 @@ function buildNewRoute(
   routes: Map<number, Route[]>,
   subsection_id: number
 ): NewRoute {
+  const today = new Date()
   const sort =
     (routes.get(subsection_id) || []).reduce((m, r) => Math.max(m, r.sort), 0) +
     1
@@ -140,65 +128,49 @@ function buildNewRoute(
     setter1_id: 7,
     setter2_id: null,
     description: null,
-    set_on: null,
+    set_on: `${today.getFullYear()}-${zeroPad(today.getMonth() + 1)}-${zeroPad(
+      today.getDate()
+    )}`,
     sort,
   }
 }
 
-type InitializeAction = {
-  type: "init"
-  completedRoutes: CompletedRoute[]
-}
-
-type CompleteAction = {
-  type: "complete"
-  completedRoute: CompletedRoute
-}
-
-type IncompleteAction = {
-  type: "incomplete"
-  routeId: number
-}
-
-type Actions = InitializeAction | CompleteAction | IncompleteAction
-
-function completedRoutesReducer(
-  state: Map<number, CompletedRoute>,
-  action: Actions
-): Map<number, CompletedRoute> {
-  switch (action.type) {
-    case "init":
-      return mapOf(action.completedRoutes, "route_id")
-
-    case "complete": {
-      const newState = new Map(state)
-      newState.set(action.completedRoute.route_id, action.completedRoute)
-      return newState
-    }
-
-    case "incomplete": {
-      const newState = new Map(state)
-      newState.delete(action.routeId)
-      return newState
-    }
-  }
-  return state
-}
-
+/**
+ * @param routes A list of routes
+ * @param editing True if editing this subsection
+ * @param reorderedIds A list of route ids in the desired order
+ * @returns the routes in the specified order
+ */
 function getOrderedRoutes(
   routes: Route[],
+  editing: boolean,
   reorderedIds: number[] | undefined
 ): Route[] {
-  if (!reorderedIds) {
-    return routes
-  }
+  if (editing) {
+    if (reorderedIds) {
+      const m = new Map<number, Route>()
+      routes.forEach((r) => m.set(r.id, r))
+      return reorderedIds.map((id) => m.get(id)).filter(Boolean) as Route[]
+    }
 
-  const m = new Map<number, Route>()
-  routes.forEach((r) => m.set(r.id, r))
-  return reorderedIds.map((id) => m.get(id)).filter(Boolean) as Route[]
+    const lst = [...routes]
+    lst.sort((a, b) => a.sort - b.sort)
+    return lst
+  }
+  return routes
+}
+
+/** @returns the default route sort from localStorage */
+function getRouteSort(): keyof typeof ROUTE_SORTS {
+  const sort = localStorage.getItem("routesort")
+  if (sort && sort in ROUTE_SORTS) {
+    return sort as keyof typeof ROUTE_SORTS
+  }
+  return "Left-to-Right"
 }
 
 const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
+  const [sortRoutesBy, setSortRoutesBy] = useState(getRouteSort)
   const [rooms, setRooms] = useState<Room[] | undefined>()
   const [selectedRoomId, setSelectedRoomId] = useState(0)
   const [sections, setSections] = useState<Map<number, Section[]> | undefined>()
@@ -214,6 +186,26 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
   const [editing, setEditing] = useState<number | undefined>()
   const [reorderedIds, setReorderedIds] = useState<number[] | undefined>()
   const draggingRoute = useRef<Route>()
+
+  const updateRouteSort = useCallback((evt: Event) => {
+    const target = evt.target as HTMLSelectElement
+    const value = target.value as keyof typeof ROUTE_SORTS
+    setSortRoutesBy(value as keyof typeof ROUTE_SORTS)
+    localStorage.setItem("routesort", value)
+
+    setRoutes((routes) => {
+      if (routes) {
+        const newRoutes = new Map() as typeof routes
+        for (const [key, lst] of routes) {
+          const newLst = [...lst]
+          newLst.sort(ROUTE_SORTS[value])
+          newRoutes.set(key, newLst)
+        }
+        return newRoutes
+      }
+      return routes
+    })
+  }, [])
 
   const switchRooms = useCallback((evt: Event) => {
     evt.preventDefault()
@@ -250,9 +242,9 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
   const doSaveRoute = useCallback(
     (route: NewRoute | Route) =>
       saveRoute(jwt, route).then((savedRoute) => {
-        setRoutes((r) => r && updateRouteTable(r, [savedRoute]))
+        setRoutes((r) => r && updateRouteTable(r, [savedRoute], sortRoutesBy))
       }),
-    [jwt]
+    [jwt, sortRoutesBy]
   )
 
   const dragStart = useCallback(
@@ -305,14 +297,16 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
       ) {
         const idSortMap = reorderedIds.map((id, sort) => ({ id, sort }))
         reorderRoutes(jwt, idSortMap).then((updatedRoutes) => {
-          setRoutes((r) => r && updateRouteTable(r, updatedRoutes))
+          setRoutes(
+            (r) => r && updateRouteTable(r, updatedRoutes, sortRoutesBy)
+          )
           setReorderedIds(undefined)
         })
       } else {
         setReorderedIds(undefined)
       }
     },
-    [reorderedIds]
+    [reorderedIds, sortRoutesBy]
   )
 
   useEffect(() => {
@@ -330,7 +324,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
       setSetters(mapOf(setters, "id"))
     })
     getRoutes(jwt).then((routes) => {
-      setRoutes(mapArray(routes, "subsection_id", "sort"))
+      setRoutes(mapArray(routes, "subsection_id", ROUTE_SORTS[sortRoutesBy]))
     })
     getCompletedRoutes(jwt).then((completedRoutes) => {
       dispatchCompletedRoutes({ type: "init", completedRoutes })
@@ -363,6 +357,14 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
             </li>
           ))}
         </menu>
+        <label class={styles["sort-routes-by"]}>
+          Sort Routes by:&nbsp;
+          <select onChange={updateRouteSort} value={sortRoutesBy}>
+            {Object.keys(ROUTE_SORTS).map((s) => (
+              <option value={s}>{s}</option>
+            ))}
+          </select>
+        </label>
       </header>
       {(sections.get(selectedRoomId) || []).map((section) => (
         <section key={`section${section.id}`}>
@@ -396,6 +398,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
               <ol>
                 {getOrderedRoutes(
                   routes.get(subsection.id) || [],
+                  editing === subsection.id,
                   editing === subsection.id ? reorderedIds : undefined
                 ).map((route) =>
                   editing === subsection.id ? (

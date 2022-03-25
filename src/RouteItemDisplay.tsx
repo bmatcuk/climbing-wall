@@ -73,6 +73,12 @@ const RouteItemDisplay: FunctionComponent<Props> = ({
         <SetterAbbr setter={setters.get(route.setter1_id)} />
       </small>
     )}
+    {route.set_on && (
+      <small>
+        &nbsp;
+        {Number(route.set_on.substr(5, 2))}/{Number(route.set_on.substr(8, 2))}
+      </small>
+    )}
   </>
 )
 
