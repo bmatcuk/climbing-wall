@@ -453,6 +453,7 @@ const EditRouteItem: FunctionComponent<Props> = ({
         </form>
       ) : (
         <label onClick={toggleEditing}>
+          <span class={styles.pencil}>&#9998;</span>
           <RouteItemDisplay route={route} setters={setters} toprope={toprope} />
         </label>
       )}

@@ -2,6 +2,7 @@ import type { FunctionComponent } from "preact"
 import { useCallback, useState } from "preact/hooks"
 
 import type { Route, Setter, CompletedRoute } from "./api/routes"
+import Checkbox from "./Checkbox"
 import RouteItemDisplay from "./RouteItemDisplay"
 
 import styles from "./routeitem.module.css"
@@ -38,8 +39,7 @@ const RouteItem: FunctionComponent<Props> = ({
   return (
     <li class={styles["route-item"]}>
       <label>
-        <input
-          type="checkbox"
+        <Checkbox
           checked={Boolean(completed)}
           onChange={toggle}
           disabled={toggling}

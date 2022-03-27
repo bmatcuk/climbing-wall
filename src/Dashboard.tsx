@@ -368,7 +368,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
       </header>
       {(sections.get(selectedRoomId) || []).map((section) => (
         <section key={`section${section.id}`}>
-          <header>
+          <header class={styles.sticky}>
             <h2>{section.name}</h2>
           </header>
           {(subsections.get(section.id) || []).map((subsection) => (

@@ -30,6 +30,13 @@
   text-align: center;
 }
 
+.sticky {
+  background-color: var(--bgcolor);
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
 a.edit:link,
 a.edit:visited,
 a.edit:hover,

@@ -6,10 +6,6 @@
   --neutral-25: #5f37133f;
   --accent-color: #fc4819;
 
-  --checkbox-border: var(--neutral-color);
-  --checkbox-background: var(--bgcolor);
-  --checkbox-checked: var(--neutral-color);
-
   --pink: #bd269f;
   --red: #bd2626;
   --orange: #bd7926;
@@ -27,10 +23,6 @@
     --neutral-50: #f9fbfc7f;
     --neutral-25: #f9fbfc3f;
     --accent-color: #fc4819;
-
-    --checkbox-border: var(--bgcolor);
-    --checkbox-background: var(--neutral-color);
-    --checkbox-checked: var(--bgcolor);
 
     --pink: #b513a5;
     --red: #b51313;

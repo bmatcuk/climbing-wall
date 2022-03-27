@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "preact"
 import { useCallback, useState } from "preact/hooks"
 
+import Checkbox from "./Checkbox"
 import { User, createUser, login as loginUser } from "./api/user"
 
 type Props = {
@@ -111,13 +112,12 @@ const Login: FunctionComponent<Props> = ({ setUser, setJwt }) => {
             </label>
           )}
           <label>
-            <input
-              type="checkbox"
+            <Checkbox
               onChange={updateRememberMe}
               checked={rememberMe}
               disabled={submitting}
-            />{" "}
-            Remember Me
+            />
+            &nbsp;Remember Me
           </label>
           <input
             type="submit"

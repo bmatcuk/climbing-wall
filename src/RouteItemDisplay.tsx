@@ -2,6 +2,7 @@ import type { FunctionComponent } from "preact"
 
 import { Route, NewRoute, Setter, isRouteSaved } from "./api/routes"
 import RouteColors from "./RouteColors"
+import styles from "./routeitem.module.css"
 
 type Props = {
   route: NewRoute | Route
@@ -51,17 +52,19 @@ const RouteItemDisplay: FunctionComponent<Props> = ({
   toprope,
 }) => (
   <>
-    <strong>
+    <span>
       <RouteColors
         color1={route.color1}
         color2={route.color2}
         symbol={route.symbol}
       />
+    </span>
+    <strong>
       {difficultyToString(route.difficulty, route.difficulty_mod, toprope)}
     </strong>
-    &nbsp;
-    {isRouteSaved(route) ? route.description : <em>Add New Route</em>}
-    &nbsp;
+    <span class={styles.description}>
+      {isRouteSaved(route) ? route.description : <em>Add New Route</em>}
+    </span>
     {route.setter2_id ? (
       <small>
         <SetterAbbr setter={setters.get(route.setter1_id)} />
@@ -75,7 +78,6 @@ const RouteItemDisplay: FunctionComponent<Props> = ({
     )}
     {route.set_on && (
       <small>
-        &nbsp;
         {Number(route.set_on.substr(5, 2))}/{Number(route.set_on.substr(8, 2))}
       </small>
     )}
