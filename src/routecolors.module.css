@@ -41,6 +41,11 @@
   fill: transparent;
 }
 
+.routecolor circle.filled {
+  stroke-width: 0;
+  fill: black;
+}
+
 .routecolor text {
   fill: black;
   font-size: 13px;

@@ -19,6 +19,11 @@
   vertical-align: middle;
 }
 
+.route-item strong {
+  display: inline-block;
+  min-width: 3.5ch;
+}
+
 .route-item .description {
   text-overflow: ellipsis;
   overflow: hidden;
