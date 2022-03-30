@@ -27,6 +27,7 @@ import {
   markRouteComplete,
   markRouteIncomplete,
   reorderRoutes,
+  retireSubSection,
   saveRoute,
 } from "./api/routes"
 import { mapArray, mapOf, zeroPad } from "./utils"
@@ -186,6 +187,7 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
   const [editing, setEditing] = useState<number | undefined>()
   const [reorderedIds, setReorderedIds] = useState<number[] | undefined>()
   const draggingRoute = useRef<Route>()
+  const retireDialog = useRef<HTMLDialogElement>(null)
 
   const updateRouteSort = useCallback((evt: Event) => {
     const target = evt.target as HTMLSelectElement
@@ -309,6 +311,38 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
     [reorderedIds, sortRoutesBy]
   )
 
+  const confirmRetireSubSection = useCallback((evt: Event) => {
+    evt.preventDefault()
+    retireDialog.current?.showModal()
+  }, [])
+
+  const cancelRetire = useCallback(
+    (evt: Event) => {
+      evt.preventDefault()
+      retireDialog.current?.close()
+    },
+    [retireDialog]
+  )
+
+  const doRetireSubSection = useCallback(
+    (evt: Event) => {
+      evt.preventDefault()
+      retireDialog.current?.close()
+      if (editing) {
+        const subsectionId = editing
+        retireSubSection(jwt, subsectionId).then(() => {
+          setReorderedIds([])
+          setRoutes((routes) => {
+            const newRoutes = new Map(routes)
+            newRoutes.delete(subsectionId)
+            return newRoutes
+          })
+        })
+      }
+    },
+    [jwt, editing]
+  )
+
   useEffect(() => {
     getRooms(jwt).then((rooms) => {
       setRooms(rooms)
@@ -426,16 +460,37 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
                   )
                 )}
                 {editing === subsection.id && (
-                  <EditRouteItem
-                    route={buildNewRoute(routes, subsection.id)}
-                    setters={setters}
-                    toprope={selectedRoomId === 2}
-                    saveRoute={doSaveRoute}
-                    dragStart={dragStart}
-                    dragOver={dragOver}
-                    drop={dragOver}
-                    dragEnd={dragEnd}
-                  />
+                  <>
+                    <EditRouteItem
+                      route={buildNewRoute(routes, subsection.id)}
+                      setters={setters}
+                      toprope={selectedRoomId === 2}
+                      saveRoute={doSaveRoute}
+                      dragStart={dragStart}
+                      dragOver={dragOver}
+                      drop={dragOver}
+                      dragEnd={dragEnd}
+                    />
+                    <li>
+                      <a href="#" onClick={confirmRetireSubSection}>
+                        Retire All
+                      </a>
+                      <dialog ref={retireDialog}>
+                        <p>
+                          Are you sure you want to retire all these routes? It
+                          cannot be undone.
+                        </p>
+                        <menu>
+                          <a href="#" onClick={doRetireSubSection}>
+                            YES, RETIRE
+                          </a>
+                          <a href="#" onClick={cancelRetire}>
+                            Cancel
+                          </a>
+                        </menu>
+                      </dialog>
+                    </li>
+                  </>
                 )}
               </ol>
             </section>

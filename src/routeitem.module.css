@@ -56,8 +56,3 @@
 .route-item.edit form a {
   line-height: 1.86em;
 }
-
-.route-item.edit dialog menu {
-  display: flex;
-  justify-content: space-between;
-}

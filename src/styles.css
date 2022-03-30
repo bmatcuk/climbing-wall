@@ -131,3 +131,8 @@ main {
   max-width: 100ch;
   margin: 0 auto;
 }
+
+dialog menu {
+  display: flex;
+  justify-content: space-between;
+}

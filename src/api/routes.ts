@@ -325,3 +325,32 @@ export async function reorderRoutes(
     throw err.message
   }
 }
+
+export async function retireSubSection(
+  jwt: string,
+  subsectionId: number
+): Promise<void> {
+  let response: Response | null = null
+  try {
+    const url = new URL("routes", process.env.API_BASE)
+    url.searchParams.set("subsection_id", `eq.${subsectionId}`)
+    url.searchParams.set("active", "is.true")
+
+    response = await fetch(url.toString(), {
+      method: "PATCH",
+      body: JSON.stringify({ active: false }),
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    })
+  } catch (e) {
+    throw "Could not connect to API"
+  }
+
+  if (!response.ok) {
+    const err = await response.json()
+    throw err.message
+  }
+}

@@ -50,38 +50,46 @@ const RouteItemDisplay: FunctionComponent<Props> = ({
   route,
   setters,
   toprope,
-}) => (
-  <>
-    <span>
-      <RouteColors
-        color1={route.color1}
-        color2={route.color2}
-        symbol={route.symbol}
-      />
-    </span>
-    <strong>
-      {difficultyToString(route.difficulty, route.difficulty_mod, toprope)}
-    </strong>
-    <span class={styles.description}>
-      {isRouteSaved(route) ? route.description : <em>Add New Route</em>}
-    </span>
-    {route.setter2_id ? (
-      <small>
-        <SetterAbbr setter={setters.get(route.setter1_id)} />
-        +
-        <SetterAbbr setter={setters.get(route.setter2_id)} />
-      </small>
-    ) : (
-      <small>
-        <SetterAbbr setter={setters.get(route.setter1_id)} />
-      </small>
-    )}
-    {route.set_on && (
-      <small>
-        {Number(route.set_on.substr(5, 2))}/{Number(route.set_on.substr(8, 2))}
-      </small>
-    )}
-  </>
-)
+}) => {
+  const isSaved = isRouteSaved(route)
+  return (
+    <>
+      <span>
+        <RouteColors
+          color1={route.color1}
+          color2={route.color2}
+          symbol={route.symbol}
+        />
+      </span>
+      <strong>
+        {difficultyToString(route.difficulty, route.difficulty_mod, toprope)}
+      </strong>
+      <span class={styles.description}>
+        {isSaved ? route.description : <em>Add New Route</em>}
+      </span>
+      {isSaved && (
+        <>
+          {route.setter2_id ? (
+            <small>
+              <SetterAbbr setter={setters.get(route.setter1_id)} />
+              +
+              <SetterAbbr setter={setters.get(route.setter2_id)} />
+            </small>
+          ) : (
+            <small>
+              <SetterAbbr setter={setters.get(route.setter1_id)} />
+            </small>
+          )}
+          {route.set_on && (
+            <small>
+              {Number(route.set_on.substr(5, 2))}/
+              {Number(route.set_on.substr(8, 2))}
+            </small>
+          )}
+        </>
+      )}
+    </>
+  )
+}
 
 export default RouteItemDisplay

@@ -39,8 +39,8 @@ const Symbol: FunctionComponent<{ symbol: string }> = ({ symbol }) => {
     return (
       <>
         <circle cx="9" cy="9" r="7" />
-        <circle cx="6" cy="7" r="1" />
-        <circle cx="12" cy="7" r="1" />
+        <circle cx="6" cy="7" r="1" class={styles.filled} />
+        <circle cx="12" cy="7" r="1" class={styles.filled} />
         <path d="M4,11A5 6 90 0 0 14 11" />
       </>
     )
