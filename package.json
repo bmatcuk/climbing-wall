@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "cross-env NODE_ENV=production parcel build src/index.html",
+    "clean": "rimraf dist .parcel-cache",
     "start": "cross-env NODE_ENV=development parcel src/index.html"
   },
   "lint-staged": {
@@ -29,6 +30,7 @@
     "postcss": "^8.0.0",
     "postcss-modules": "^4.3.0",
     "prettier": "~2.5.1",
+    "rimraf": "~3.0.2",
     "typescript": "~4.6.2"
   },
   "dependencies": {
