@@ -331,10 +331,10 @@ const Dashboard: FunctionComponent<Props> = ({ jwt, user }) => {
       if (editing) {
         const subsectionId = editing
         retireSubSection(jwt, subsectionId).then(() => {
-          setReorderedIds([])
+          setReorderedIds(undefined)
           setRoutes((routes) => {
             const newRoutes = new Map(routes)
-            newRoutes.delete(subsectionId)
+            newRoutes.set(subsectionId, [])
             return newRoutes
           })
         })
