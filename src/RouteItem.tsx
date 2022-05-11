@@ -43,6 +43,7 @@ const RouteItem: FunctionComponent<Props> = ({
           checked={Boolean(completed)}
           onChange={toggle}
           disabled={toggling}
+          loading={toggling}
         />
         <RouteItemDisplay route={route} setters={setters} toprope={toprope} />
       </label>

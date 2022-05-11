@@ -9,7 +9,13 @@ type Props = {
 }
 
 const Symbol: FunctionComponent<{ symbol: string }> = ({ symbol }) => {
-  if (symbol === "circles") {
+  if (symbol === "8") {
+    return (
+      <text x="5.5" y="14" textLength="7">
+        8
+      </text>
+    )
+  } else if (symbol === "circles") {
     return <circle cx="9" cy="9" r="7" />
   } else if (symbol === "dashes") {
     return <path d="M9,0v3m0,3v3m0,3v3" />

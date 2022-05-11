@@ -58,6 +58,7 @@ const COLORS = [
 
 const SYMBOLS = [
   "",
+  "8",
   "circles",
   "dashes",
   "dots",

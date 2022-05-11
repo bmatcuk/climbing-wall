@@ -11,7 +11,7 @@ If you're using the postgresql app on osx, the libraries aren't part of the
 search path. You need something like:
 
 ```bash
-export DYLD_FALLBACK_LIBRARY_PATH=/Applications/Postgres.app/Contents/Versions/latest/lib postgrest postgrest.conf
+env DYLD_FALLBACK_LIBRARY_PATH=/Applications/Postgres.app/Contents/Versions/latest/lib ./postgrest postgrest.conf
 ```
 
 ## Importing Data

@@ -6,6 +6,7 @@ type Props = {
   checked: boolean
   class?: string
   disabled: boolean
+  loading?: boolean
   onChange(evt: Event): void
 }
 
@@ -13,11 +14,14 @@ const Checkbox: FunctionComponent<Props> = ({
   checked,
   class: className,
   disabled,
+  loading,
   onChange,
 }) => (
   <>
     <input
-      class={`${styles.checkbox} ${className ? className : ""}`}
+      class={`${styles.checkbox} ${loading ? styles.loading : ""} ${
+        className ? className : ""
+      }`}
       type="checkbox"
       checked={checked}
       disabled={disabled}
