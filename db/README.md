@@ -30,6 +30,13 @@ COPY climbingwall.routes (id,subsection_id,difficulty,difficulty_mod,setter1_id,
 FROM '/path/to/file' WITH (FORMAT csv, HEADER true);
 ```
 
+## Historical Backup
+TCW closed and everyone was very sad. And now, some years later, I'm
+decommissioning the server that ran this app. Before I did, I dumped all of the
+non-user tables into `climbingwall_dump.sql` for archival purposes. This file
+preserves the last climbs TCW had on their walls before closing their doors one
+last time.
+
 [pgjwt]: https://github.com/michelp/pgjwt
 [postgresql]: https://www.postgresql.org/
 [postgrest]: https://postgrest.org/
